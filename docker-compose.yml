@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    environment:
+      - FLASK_ENV=development
+    command: sh -c "python check_db.py && flask run --host=0.0.0.0"
+
+  tests:
+    build: .
+    command: pytest -v
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
