@@ -26,18 +26,22 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 4️⃣ Build Docker image
+      # 4️⃣ Build Docker image with explicit tag
       - name: Build Docker image
-        run: docker compose build
+        run: docker build -t pregnancy-tracker:latest .
 
-      # 5️⃣ Run tests container (ה־workflow יכשל אם הטסטים נכשלו)
+      # 4.1️⃣ Show built images for verification
+      - name: List Docker images
+        run: docker images
+
+      # 5️⃣ Run tests container (workflow יכשל אם הטסטים נכשלו)
       - name: Run tests
         run: docker compose run --rm tests
 
-      # 6️⃣ Push image to DockerHub
+      # 6️⃣ Push Docker image to DockerHub
       - name: Push Docker image
         run: |
-          docker tag pregnancy-tracker ${{ secrets.DOCKERHUB_USERNAME }}/pregnancy-tracker:latest
+          docker tag pregnancy-tracker:latest ${{ secrets.DOCKERHUB_USERNAME }}/pregnancy-tracker:latest
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/pregnancy-tracker:latest
 
       # 7️⃣ Deploy to EC2
