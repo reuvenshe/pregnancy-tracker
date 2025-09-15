@@ -32,7 +32,7 @@ jobs:
 
       # 5️⃣ Run tests
       - name: Run tests container
-        run: docker-compose run --rm tests
+        run: docker compose run --rm tests
 
       # 6️⃣ Push image to DockerHub (רק אם כל הקודם עבר)
       - name: Push Docker image
