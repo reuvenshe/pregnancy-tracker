@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template
 from . import db
 from .models import PregnancyRecord
 import pandas as pd
@@ -7,7 +7,7 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
 def index():
-    return "Pregnancy Tracker API is running!"
+    return render_template('index.html')
 
 # Load CSV data into SQLite
 @main_bp.route('/load_data', methods=['POST'])

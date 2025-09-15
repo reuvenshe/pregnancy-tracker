@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pregnancy Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-4">
+    <h1 class="mb-4">Pregnancy Tracker</h1>
+
+    <!-- Form to add a new record -->
+    <form id="recordForm" class="mb-4">
+        <div class="row g-3">
+            <div class="col">
+                <input type="text" class="form-control" placeholder="Patient Name" id="patient_name" required>
+            </div>
+            <div class="col">
+                <input type="number" class="form-control" placeholder="Week" id="week" required>
+            </div>
+            <div class="col">
+                <input type="number" step="0.1" class="form-control" placeholder="Weight" id="weight">
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" placeholder="Blood Pressure" id="blood_pressure">
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" placeholder="Notes" id="notes">
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Add Record</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Table for records -->
+    <table class="table table-striped" id="recordsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Patient</th>
+                <th>Week</th>
+                <th>Weight</th>
+                <th>Blood Pressure</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+async function loadRecords() {
+    const res = await fetch('/records');
+    const records = await res.json();
+    const tbody = document.querySelector('#recordsTable tbody');
+    tbody.innerHTML = '';
+    records.forEach(r => {
+        tbody.innerHTML += `<tr>
+            <td>${r.id}</td>
+            <td>${r.patient_name}</td>
+            <td>${r.week}</td>
+            <td>${r.weight || ''}</td>
+            <td>${r.blood_pressure || ''}</td>
+            <td>${r.notes}</td>
+        </tr>`;
+    });
+}
+
+document.getElementById('recordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = {
+        patient_name: document.getElementById('patient_name').value,
+        week: parseInt(document.getElementById('week').value),
+        weight: parseFloat(document.getElementById('weight').value) || null,
+        blood_pressure: document.getElementById('blood_pressure').value,
+        notes: document.getElementById('notes').value
+    };
+    await fetch('/records', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+    loadRecords();
+    e.target.reset();
+});
+
+loadRecords();
+</script>
+</body>
+</html>
