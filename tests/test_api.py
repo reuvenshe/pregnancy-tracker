@@ -14,7 +14,7 @@ def client():
 def test_index(client):
     res = client.get('/')
     assert res.status_code == 200
-    assert b"Pregnancy Tracker API is running!" in res.data
+    assert b"<h1 class=\"mb-4\">Pregnancy Tracker</h1>" in res.data
 
 def test_add_record_and_get(client):
     # הוספת רשומה חדשה
