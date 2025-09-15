@@ -26,22 +26,18 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 4️⃣ Build Docker image with explicit tag
+      # 4️⃣ Build Docker image
       - name: Build Docker image
-        run: docker build -t pregnancy-tracker:latest .
+        run: docker compose build
 
-      # 4.1️⃣ Show built images for verification
-      - name: List Docker images
-        run: docker images
-
-      # 5️⃣ Run tests container (workflow יכשל אם הטסטים נכשלו)
+      # 5️⃣ Run tests container (ה־workflow יכשל אם הטסטים נכשלו)
       - name: Run tests
         run: docker compose run --rm tests
 
-      # 6️⃣ Push Docker image to DockerHub
+      # 6️⃣ Push image to DockerHub
       - name: Push Docker image
         run: |
-          docker tag pregnancy-tracker:latest ${{ secrets.DOCKERHUB_USERNAME }}/pregnancy-tracker:latest
+          docker tag pregnancy-tracker ${{ secrets.DOCKERHUB_USERNAME }}/pregnancy-tracker:latest
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/pregnancy-tracker:latest
 
       # 7️⃣ Deploy to EC2
@@ -52,6 +48,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # ✅ אין צורך ב-sudo, ec2-user כבר בקבוצת docker
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/pregnancy-tracker:latest
             docker stop pregnancy-tracker || true
             docker rm pregnancy-tracker || true
