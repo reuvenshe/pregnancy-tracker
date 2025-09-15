@@ -1,0 +1,41 @@
+name: CI/CD - Pregnancy Tracker
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-test-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ Setup Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # 3️⃣ Log in to DockerHub
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 4️⃣ Build Docker image
+      - name: Build Docker image
+        run: docker build -t pregnancy-tracker .
+
+      # 5️⃣ Run tests
+      - name: Run tests container
+        run: docker-compose run --rm tests
+
+      # 6️⃣ Push image to DockerHub (רק אם כל הקודם עבר)
+      - name: Push Docker image
+        run: |
+          docker tag pregnancy-tracker ${{ secrets.DOCKERHUB_USERNAME }}/pregnancy-tracker:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/pregnancy-tracker:latest
